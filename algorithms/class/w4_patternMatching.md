@@ -65,23 +65,22 @@ int bruteForce(const string& text, const string& pattern) {
 - **2、匹配方法（假设s2正在匹配s1）**
   - s2匹配到的第一个不同的地方，记录它的下标i（数组下标），并且查找s2的next[i]（记作a）
   - next[i]的值的含义是：目前s2的前a个字符和最后a个字符一样，那么就可以**将s2的头部移动到i往前第a个位置**（如i=13，a=6.则将s2数组的第0位移到原来的第7位）
+
+ 
     - <img width="250" height="150" alt="c2593aeef31c143c30642744e5f83fb7" src="https://github.com/user-attachments/assets/ead02589-6561-4b54-895e-7713557fd06d" />
     - s1固定，s2往后跳
-  - 
-
-  
-*   **时间复杂度**：稳定在 $O(n+m)$。
-*   **适用场景**：主串以“数据流”形式输入（无法回溯），或者主串和模式串具有大量重复字符的场景。
-
-```cpp
-#include <iostream>
-#include <string>
-#include <vector>
-
-using namespace std;
-
-// 构建 next 数组
-vector<int> getNext(const string& pattern) {
+  - 重复之前的操作
+  - 为什么s2中间跳过的部分不会匹配成功？
+    - 因为如果能匹配成功，next数组的值就和原来的不一样
+    - 
+- **3、next数组求值**
+  - 就这样那样呗
+  - ```cpp
+    #include <iostream>
+    #include <string>
+    #include <vector>
+    
+    vector<int> getNext(const string& pattern) {
     int m = pattern.length();
     vector<int> next(m, 0);
     int j = 0; // 前缀末尾位置，也代表最长公共前后缀长度
@@ -97,7 +96,19 @@ vector<int> getNext(const string& pattern) {
         next[i] = j;
     }
     return next;
-}
+    }
+
+
+  
+*   **时间复杂度**：稳定在 $O(n+m)$。
+*   **适用场景**：主串以“数据流”形式输入（无法回溯），或者主串和模式串具有大量重复字符的场景。
+
+```cpp
+#include <iostream>
+#include <string>
+
+
+using namespace std;
 
 int kmpSearch(const string& text, const string& pattern) {
     if (pattern.empty()) return 0;
