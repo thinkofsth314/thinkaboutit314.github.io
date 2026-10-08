@@ -72,9 +72,18 @@ int bruteForce(const string& text, const string& pattern) {
   - 重复之前的操作
   - 为什么s2中间跳过的部分不会匹配成功？
     - 因为如果能匹配成功，next数组的值就和原来的不一样
-    - 
+
 - **3、next数组求值**
-  - 就这样那样呗
+  - 流程：对于第i个位置，看i-1处的next值。设next[i-1]=7，则看第8位和第i-1位是否一样
+    - 一样：next[i]=8
+    - 不一样：看next[8],设为3.则继续看next[4]是否和第i-1位一样。
+      - 相同：next[i]=3+1=4
+      - 不同：继续看next[3],设next[3]=1，比对第2位和第i-1位
+        - 相同：next[i]=1+1=2
+        - 不同：继续看next[1]=0→比对i-1与第1位
+    - 若跳到头了，无法继续跳，则next[i]=0
+   
+  
   - ```cpp
     #include <iostream>
     #include <string>
@@ -97,7 +106,6 @@ int bruteForce(const string& text, const string& pattern) {
     }
     return next;
     }
-
 
   
 *   **时间复杂度**：稳定在 $O(n+m)$。
