@@ -64,7 +64,7 @@ int bruteForce(const string& text, const string& pattern) {
    
 - **2、匹配方法（假设s2正在匹配s1）**
   - s2匹配到的第一个不同的地方，记录它的下标i（数组下标），并且查找s2的next[i]（记作a）
-  - next[i]的值的含义是：目前s2的前a个字符和最后a个字符一样，那么就可以**将s2的头部移动到i往前第a个位置**（如i=13，a=6.则将s2数组的第0位移到原来的第7位）
+  - next[i]的值的含义是：目前s2的前a个字符和最后a个字符一样，那么就可以**将s2的头部(第0位)移动到i往前的第a个位置**（如i=13，a=6.则将s2数组的第0位移到原来的第7位）
 
  
     - <img width="250" height="150" alt="c2593aeef31c143c30642744e5f83fb7" src="https://github.com/user-attachments/assets/ead02589-6561-4b54-895e-7713557fd06d" />
@@ -72,15 +72,45 @@ int bruteForce(const string& text, const string& pattern) {
   - 重复之前的操作
   - 为什么s2中间跳过的部分不会匹配成功？
     - 因为如果能匹配成功，next数组的值就和原来的不一样
+  - ```cpp
+    #include <iostream>
+    #include <string>
+    #include <vector>
+    
+    using namespace std;
+    
+    int kmpSearch(const string& text, const string& pattern) {
+        if (pattern.empty()) return 0;
+        
+        int n = text.length();
+        int m = pattern.length();
+        vector<int> next = getNext(pattern);
+        
+        int j = 0; 
+        for (int i = 0; i < n; i++) { // 主串指针 i 永不回退
+            while (j > 0 && text[i] != pattern[j]) {
+                // 失配时，模式串指针根据 next 数组跳转
+                j = next[j - 1];
+            }
+            if (text[i] == pattern[j]) {
+                j++;
+            }
+            if (j == m) {
+                return i - m + 1; // 匹配成功，返回起始位置
+            }
+        }
+        return -1;
+    }
+    ```
 
 - **3、next数组求值**
-  - 流程：对于第i个位置，看i-1处的next值。设next[i-1]=7，则看第8位和第i-1位是否一样
+  - 流程：对于第i个位置，看i-1处的next值。设next[i-1]=7，则看第7位和第i-1位是否一样
     - 一样：next[i]=8
-    - 不一样：看next[8],设为3.则继续看next[4]是否和第i-1位一样。
+    - 不一样：看next[8],设为3.则继续看next[3]是否和第i-1位一样。
       - 相同：next[i]=3+1=4
-      - 不同：继续看next[3],设next[3]=1，比对第2位和第i-1位
+      - 不同：继续看next[3],设next[3]=1，比对第1位和第i-1位
         - 相同：next[i]=1+1=2
-        - 不同：继续看next[1]=0→比对i-1与第1位
+        - 不同：继续看next[1]=0→比对i-1与第0位
     - 若跳到头了，无法继续跳，则next[i]=0
    
   
@@ -89,58 +119,32 @@ int bruteForce(const string& text, const string& pattern) {
     #include <string>
     #include <vector>
     
-    vector<int> getNext(const string& pattern) {
-    int m = pattern.length();
-    vector<int> next(m, 0);
-    int j = 0; // 前缀末尾位置，也代表最长公共前后缀长度
+    vector<int> getNext(const string& s) {
+    int m = s.length();
+    vector<int> next(m, 0);//都初始化为0
+    next[0]=-1;
+    int i=2;//当前求next值的位置
+    int cn=0;//和i-1位置比对的值的下标
     
-    for (int i = 1; i < m; i++) {
-        // 当发生不匹配时，向前回溯寻找更短的相同前后缀
-        while (j > 0 && pattern[i] != pattern[j]) {
-            j = next[j - 1];
-        }
-        if (pattern[i] == pattern[j]) {
-            j++;
-        }
-        next[i] = j;
+    while(i<m){
+      if(s[i-1]==s[cn])next[i++]= ++cn;//匹配到了，next值就等于匹配到的下标+1
+      else if(cn>0)cn=next[cn];//没匹配到，cn往前跳到next[cn]，再匹配
+      else next[i++]=0;//cn跳到最前面了，就不能继续跳
     }
-    return next;
+      
+    return next;//vector可以返回数组本身
     }
 
   
 *   **时间复杂度**：稳定在 $O(n+m)$。
-*   **适用场景**：主串以“数据流”形式输入（无法回溯），或者主串和模式串具有大量重复字符的场景。
+  - 对于取next数组：$O(m)$
+    - 运行多少次为三种情况运行次数的加和。
+    - 第一种和第三种i都增加了。而i的变化范围：2~m。则加起来只会运行m-2次。
+    - 第二种是cn单独变化。由于cn的值一定小于等于m-2（只有第一种会加值），则减小次数必小于等于m-2.(cn=0)
+    - 加起来最多运行2m-4次。
+  - 
 
-```cpp
-#include <iostream>
-#include <string>
 
-
-using namespace std;
-
-int kmpSearch(const string& text, const string& pattern) {
-    if (pattern.empty()) return 0;
-    
-    int n = text.length();
-    int m = pattern.length();
-    vector<int> next = getNext(pattern);
-    
-    int j = 0; // 模式串指针
-    for (int i = 0; i < n; i++) { // 主串指针 i 永不回退
-        while (j > 0 && text[i] != pattern[j]) {
-            // 失配时，模式串指针根据 next 数组跳转
-            j = next[j - 1];
-        }
-        if (text[i] == pattern[j]) {
-            j++;
-        }
-        if (j == m) {
-            return i - m + 1; // 匹配成功，返回起始位置
-        }
-    }
-    return -1;
-}
-```
 
 ### 4. BM 算法 (坏字符规则简化版)
 
