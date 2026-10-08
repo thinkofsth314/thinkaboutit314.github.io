@@ -64,44 +64,39 @@ int bruteForce(const string& text, const string& pattern) {
    
 - **2、匹配方法（假设s2正在匹配s1）**
   - s2匹配到的第一个不同的地方，记录它的下标i（数组下标），并且查找s2的next[i]（记作a）
-  - next[i]的值的含义是：目前s2的前a个字符和最后a个字符一样，那么就可以**将s2的头部(第0位)移动到i往前的第a个位置**（如i=13，a=6.则将s2数组的第0位移到原来的第7位）
+  - next[i]的值的含义是：目前s2的前a个字符和最后a个字符一样，那么就可以**将s2的头部(第0位)移动到i往前的第a个位置，此时比对位置正好在第a个位置**（如i=13，a=6.则将s2数组的第0位移到原来的第7位）
 
  
-    - <img width="250" height="150" alt="c2593aeef31c143c30642744e5f83fb7" src="https://github.com/user-attachments/assets/ead02589-6561-4b54-895e-7713557fd06d" />
+    - <img width="500" height="250" alt="90b259dd4df229bd1a613c3b6164827a" src="https://github.com/user-attachments/assets/dc10f8bb-f80b-4f41-86da-533b7198fa92" />
+
     - s1固定，s2往后跳
   - 重复之前的操作
   - 为什么s2中间跳过的部分不会匹配成功？
     - 因为如果能匹配成功，next数组的值就和原来的不一样
-  - ```cpp
+  ```cpp
     #include <iostream>
     #include <string>
     #include <vector>
     
     using namespace std;
     
-    int kmpSearch(const string& text, const string& pattern) {
-        if (pattern.empty()) return 0;
-        
-        int n = text.length();
-        int m = pattern.length();
-        vector<int> next = getNext(pattern);
-        
-        int j = 0; 
-        for (int i = 0; i < n; i++) { // 主串指针 i 永不回退
-            while (j > 0 && text[i] != pattern[j]) {
-                // 失配时，模式串指针根据 next 数组跳转
-                j = next[j - 1];
-            }
-            if (text[i] == pattern[j]) {
-                j++;
-            }
-            if (j == m) {
-                return i - m + 1; // 匹配成功，返回起始位置
-            }
+    int kmp(string s1,string s2){
+    //s1中当前比对的位置是x
+    //s2中当前比对的位置是y
+    int n=s1.length(), m=s2.length(),x=0,y=0;
+    vector<int> next=getNext(s2);
+    while(x<n&&y<m){//s1比对的位置越界，则匹配失败。s2比对的位置越界，则匹配已经成功
+        if(s1[x]==s2[y]){
+            x++;
+            y++;
         }
-        return -1;
+        //下面是开始有不匹配元素的处理
+        else if(y==0)x++;//s2的比对位置已经在开头。则x往后走一直比对
+        else y=next[y];//如果y还可以往前跳，则
     }
-    ```
+    return y==m? x-y:-1;
+  }
+  ```
 
 - **3、next数组求值**
   - 流程：对于第i个位置，看i-1处的next值。设next[i-1]=7，则看第7位和第i-1位是否一样
@@ -142,9 +137,15 @@ int bruteForce(const string& text, const string& pattern) {
     - 第一种和第三种i都增加了。而i的变化范围：2~m。则加起来只会运行m-2次。
     - 第二种是cn单独变化。由于cn的值一定小于等于m-2（只有第一种会加值），则减小次数必小于等于m-2.(cn=0)
     - 加起来最多运行2m-4次。
-  - 
+  - 对于匹配函数
+    - 还是三种情况：第一、二种x往后，x最多跳n次。
+    - 第三种只有y往前，且y被x控制住了（y加的时候x都加了），则最多也是执行n次
+    - 则匹配的循环为O(n)
 
-
+* **例题：二叉树的匹配**
+  两颗二叉树root和subroot。验证root中是否有与subroot相同的子树（包括结构和数值）
+  - 暴力：每一个节点都检查一遍
+  
 
 ### 4. BM 算法 (坏字符规则简化版)
 
