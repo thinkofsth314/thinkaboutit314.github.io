@@ -90,7 +90,7 @@
 
 * **命题(还原二叉树):前/后/层序+中序可以唯一地还原二叉树**
   - 证明
-#### **非递归算法**
+#### **非递归算法（模拟递归）**
 * **前序**
   - 思路：为了能在左子树遍历之后找到右子树，将遇到的右结点都存入栈
     - 各结点：打印结点值→看右：右孩子放入栈。若右为空直接看左孩子
@@ -117,8 +117,8 @@
       - 若为空：**弹出栈顶并输出，来到栈顶的右孩子**
   - ``` cpp
             void printInOrderNR(){
-            LinkStack<BinTree<T>*> s;
-            BinTree<T>* bt = this;
+            LinkStack<BinTree<T>*> s;//栈
+            BinTree<T>* bt = this;//目前在的结点
             while(bt!=nullptr || !s.isEmpty()){
                 if(bt!=nullptr){
                     s.push(bt);
@@ -134,4 +134,39 @@
     ```
 * **后序**
   - 思路：为了让左子树→右子树→根每个环节都能找到，需要**给每个入栈的结点加指标**
+    - 去到一个结点，入栈，标记为1，去到左孩子
+    - 若左孩子为空，弹栈顶，取出它的标记
+      - 若标记为1，说明还没去到右孩子，还不能打印：再次入栈，标记变为2，去到右孩子
+      - 若标记为2，说明左右子树都去过了，可以打印了
+  - ``` cpp
+      void printPostOrderNR(){
+              LinkStack<BinTree<T>*> s;
+              LinkStack<int> sN; //stack_Number
+              BinTree<T>* bt = this;
+              while(bt!=nullptr || !s.isEmpty()){
+                  if(bt!=nullptr){
+                      // first time encountering node
+                      s.push(bt);
+                      sN.push(1);
+                      //cout << "Pushing " << bt->data << " for the first time" << endl;
+                      bt = bt->left;
+                  }
+                  else{
+                      bt = s.pop();
+                      int num = sN.pop();
+                      //cout << bt->data << " popped for the " <<(num == 1 ? "first" :"second") << " time" << endl;
+                      if(num==1){
+                          s.push(bt);
+                          sN.push(2);
+                          //cout << "Pushing " << bt->data << " for the second time" << endl;
+                          bt = bt->right;
+                      }
+                      else{
+                          cout << bt->data << " ";
+                          bt = nullptr;
+                      }
+                  }
+              }
+          }
+    ```
 
