@@ -70,6 +70,7 @@ int bruteForce(const string& text, const string& pattern) {
     - <img width="500" height="250" alt="90b259dd4df229bd1a613c3b6164827a" src="https://github.com/user-attachments/assets/dc10f8bb-f80b-4f41-86da-533b7198fa92" />
 
     - s1固定，s2往后跳
+    - 移动后从第a个位置开始比较
   - 重复之前的操作
   - 为什么s2中间跳过的部分不会匹配成功？
     - 因为如果能匹配成功，next数组的值就和原来的不一样
