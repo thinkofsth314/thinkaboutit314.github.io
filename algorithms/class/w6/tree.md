@@ -158,7 +158,34 @@ class LTree{
   - <img width="400" height="200" alt="2130d8cb5b21dcf53fc7bb6711a947f7" src="https://github.com/user-attachments/assets/33b24b4f-1f5e-4d88-b0fb-3268ae04e41d" />
 
 * **命题(还原二叉树):前/后/层序+中序可以唯一地还原二叉树**
-  - 证明
+``` cpp
+ void printPreOrderR(){
+    cout << data << " ";
+    if(left!=nullptr) left->printPreOrderR();
+    if(right!=nullptr) right->printPreOrderR();
+}
+void printPostOrderR(){
+    if(left!=nullptr) left->printPostOrderR();//先把左子树的后序执行完
+    if(right!=nullptr) right->printPostOrderR();//再把右子树的后序执行完
+    cout << data << " ";//最后再打印根节点的值
+}
+void printInOrderR(){
+    if(left!=nullptr) left->printInOrderR();//先完成左子树的中序
+    cout << data << " ";//再打印根结点
+    if(right!=nullptr) right->printInOrderR();//最后
+}
+void printLevelOrder(){//层序
+    LinkQueue<BinTree<T>*> q;
+    q.enQueue(this);
+    while(!q.isEmpty()){
+        BinTree<T>* bt = q.deQueue();
+        cout << bt->data << " ";
+        if(bt->left!=nullptr) q.enQueue(bt->left);
+        if(bt->right!=nullptr) q.enQueue(bt->right);
+    }
+}
+
+```
 #### **非递归算法（模拟递归）**
 * **前序**
   - 思路：为了能在左子树遍历之后找到右子树，将遇到的右结点都存入栈
