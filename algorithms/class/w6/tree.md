@@ -22,8 +22,76 @@
 * **命题：已知一棵树的前序遍历和后序遍历，可以唯一地还原整棵树**
   - 对数的结点个数n进行数学归纳证明
   - n=1，只有一个根节点，可以还原
-  - 设小于n个结点的都可以唯一还原。设前序A1,...An，后序B1,...,Bn，则有A1=Bn(root)
-    - A2为A1的子结点→存在j s.t.Bj=Q2。则B1...Bj为
+  - 设小于n个结点的都可以唯一还原。设前序A1,...An，后序B1,...,Bn，则A1为根结点
+    - A2为第一颗子树的根节点→存在j s.t.Bj=A2。则B1...Bj为第一颗子树的后序→A2及之后的j-1个结点为第一颗子树的前序
+    - 由归纳假设：第一颗子树可以唯一还原。
+    - 删去这两段，则再用同样的方法，依次唯一确定所有子树。
+
+``` cpp
+template <class T>
+class LTree{
+    private:
+        T data;
+        VecList<LTree<T> *> children;
+    public:
+        LTree(){
+
+        }
+        LTree(T x){
+            data = x;
+        }
+        ~LTree(){
+
+        }
+        void addChild(LTree<T>* lt){
+            children.insertEleAtPos(children.getLength(),lt);
+        }
+        void addChild(T x){
+            LTree<T>* lt = new LTree<T>(x);
+            addChild(lt);
+        }
+        LTree<T>* getChild(T x){ // 只获得这个结点的孩子，不获取孩子的孩子等
+            for(int i=0;i<children.getLength();i++){
+                LTree<T>* lt = children.getEleAtPos(i);
+                if(lt->data==x){
+                    return lt;
+                }
+            }
+            return nullptr;
+        }
+        void setData(T x){
+            data = x;
+        }
+        T getData(){
+            return data;
+        }
+        void printPreOrder(){//前序
+            cout << data << " ";
+            for(int i=0;i<children.getLength();i++){
+                LTree<T>* lt = children.getEleAtPos(i);
+                lt->printPreOrder();
+            }
+        }
+        void printPostOrder(){//后序
+            for(int i=0;i<children.getLength();i++){
+                LTree<T>* lt = children.getEleAtPos(i);
+                lt->printPostOrder();
+            }
+            cout << data << " ";
+        }
+        void printLevelOrder(){//层序：使用队列
+            LinkQueue<LTree<T>*> q;
+            q.enQueue(this);
+            while(!q.isEmpty()){
+                LTree<T>* lt = q.deQueue();
+                cout << lt->data << " ";
+                for(int i=0;i<lt->children.getLength();i++){
+                    q.enQueue(lt->children.getEleAtPos(i));
+                }
+            }
+        }
+};
+```
 
 ### 树的表示
 * **双亲表示法**
@@ -61,7 +129,8 @@
     - 没有单独记录父结点，查找父结点通常需要搜索。
 
 * **孩子兄弟表示法**
-  - 
+
+* code
 
 ## 二叉树
 ### 概念
