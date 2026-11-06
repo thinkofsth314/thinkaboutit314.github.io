@@ -1,4 +1,7 @@
-# 小项目1：3-SAT问题
+# 小项目1
+
+* 梁雨琪 23314033
+* 25级数学类
 
 
 ## 一、解题思路
@@ -154,24 +157,7 @@
 
 
 
-### 本节参考文献编号
-
-[1] João Marques-Silva, Inês Lynce, Sharad Malik.
-Conflict-Driven Clause Learning SAT Solvers.
-Handbook of Satisfiability, 2009.
-
-参考内容：DPLL、单子句传播、冲突学习、First-UIP、非顺序回溯及变量选择策略。
-
-https://lingming.cs.illinois.edu/courses/cs527-s23/CDCL.pdf
-
-[2] Armin Biere, Andreas Fröhlich.
-Evaluating CDCL Variable Scoring Schemes.
-SAT 2015.
-
-参考内容：VSIDS 类变量评分策略及其比较。
-
-https://fmv.jku.at/papers/BiereFroehlich-SAT15.pdf
-
+本节涉及的单DPLL、单子句传播、冲突学习、First-UIP、非顺序回溯、变量选择策略和VSIDS 类变量评分策略及其比较有参考文献。（参考文献位于文章末尾） 
 
 
 
@@ -183,7 +169,7 @@ https://fmv.jku.at/papers/BiereFroehlich-SAT15.pdf
 
 因此，使一个子句成立的赋值，可能使其他子句产生新的限制，甚至发生冲突。不能独立求解各个子句，而需要始终维护一组全局一致的赋值。
 
-解决方法是：每次赋值后进行单子句传播，检查这一变化对其他子句的影响；如果发现冲突，就调整此前的选择。
+解决方法是：**每次赋值后进行单子句传播，检查这一变化对其他子句的影响；如果发现冲突，就调整此前的选择。**
 
 
 
@@ -204,13 +190,15 @@ https://fmv.jku.at/papers/BiereFroehlich-SAT15.pdf
 
 因为如果 A 和 B 都为假，前两条就会分别要求 x 为真和为假，产生矛盾。这里 A、B 可以各自代表若干项的“或”。
 
-解决方法是：从冲突子句出发，结合传播赋值的原因，逐步消去中间推导涉及的变量，得到能够解释冲突的新约束。
+解决方法是：**从冲突子句出发，结合传播赋值的原因，逐步消去中间推导涉及的变量，得到能够解释冲突的新约束。**
 
 ### 3. 确定冲突分析的停止位置和回退位置
 
 冲突发生后，如果回退得太少，可能无法解除冲突；如果回退得太多，则会撤销本来可以保留的搜索结果。
 
-本方案采用 First-UIP 方法：按赋值顺序逆向分析冲突，直到学习子句中只剩一个属于当前决策层的项。
+本方案采用 **First-UIP 方法：按赋值顺序逆向分析冲突，直到学习子句中只剩一个属于当前决策层的项。**
+
+（决策层：当前搜索进行到了第几轮主动尝试赋值）
 
 随后，回退到学习子句中其他项所属决策层的最大值；如果没有其他项，则回到第 0 层。
 
@@ -240,7 +228,7 @@ https://fmv.jku.at/papers/BiereFroehlich-SAT15.pdf
 
 
 
-本节涉及的单子句传播、First-UIP 和回退机制参考文献 [1]，动态变量评分参考文献 [1][2]，编号与前文一致。
+本节涉及的单子句传播、First-UIP 和回退机制有参考文献。（参考文献位于文章末尾） 
 
 
 
@@ -258,7 +246,7 @@ https://fmv.jku.at/papers/BiereFroehlich-SAT15.pdf
 
 新推导出的子句追加到集合末尾，原有子句的编号保持不变。
 
-### 2. 变量信息数组
+### 2. 存储变量信息的数组
 
 按变量编号保存以下信息：
 
@@ -290,4 +278,20 @@ https://fmv.jku.at/papers/BiereFroehlich-SAT15.pdf
 另外使用临时 vector 保存正在推导的新子句，分析完成后将它加入子句集合。
 
 
+## 五、参考文献
 
+[1] João Marques-Silva, Inês Lynce, Sharad Malik.  
+**Conflict-Driven Clause Learning SAT Solvers**.  
+收录于 *Handbook of Satisfiability*，2009。
+
+参考内容：根据已有赋值进行推导、分支搜索、分析冲突并生成新约束，以及根据冲突原因回退的方法。
+
+链接：https://lingming.cs.illinois.edu/courses/cs527-s23/CDCL.pdf
+
+[2] Armin Biere, Andreas Fröhlich.  
+**Evaluating CDCL Variable Scoring Schemes**.  
+*SAT 2015*，第 405–422 页。
+
+参考内容：根据变量参与冲突分析的情况调整评分，并减弱较早冲突的影响，以确定优先尝试哪个变量。
+
+链接：https://fmv.jku.at/papers/BiereFroehlich-SAT15.pdf
