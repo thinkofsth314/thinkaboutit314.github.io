@@ -46,66 +46,66 @@
 
 AMGraph<T>* PrimMST(){
 
-    // 默认连通无向图
-    T* arr = new T[numVer];
-    for(int i=0;i<numVer;i++){
-        arr[i] = verList.getEleAtPos(i);
-    }
-    AMGraph<T>* amg = new AMGraph<T>(arr,numVer,false);
+  // 默认连通无向图
+  T* arr = new T[numVer];
+  for(int i=0;i<numVer;i++){
+      arr[i] = verList.getEleAtPos(i);
+  }
+  AMGraph<T>* amg = new AMGraph<T>(arr,numVer,false);
 
-    bool isInU[numVer];//顶点是否已经进入U
-    int dist[numVer];//从U接到V-U的最小权值边
-    int from[numVer]; //最小权值边在U里的端点
+  bool isInU[numVer];//顶点是否已经进入U
+  int dist[numVer];//从U接到V-U的最小权值边
+  int from[numVer]; //最小权值边在U里的端点
 
-    //初始化
-    for(int i=1;i<numVer;i++){
-        isInU[i] = false;//所有顶点都没加入U
+  //初始化
+  for(int i=1;i<numVer;i++){
+      isInU[i] = false;//所有顶点都没加入U
 
-        //一开始只把第0个顶点放入，所以距离初始化成别的顶点和0的距离，没有就是-1
-        dist[i] = (adjMatrix[0][i] !=0 ? adjMatrix[0][i] : -1);
+      //一开始只把第0个顶点放入，所以距离初始化成别的顶点和0的距离，没有就是-1
+      dist[i] = (adjMatrix[0][i] !=0 ? adjMatrix[0][i] : -1);
 
-        
-        from[i] = (adjMatrix[0][i] != 0 ? 0 : -1);
-    }
+      
+      from[i] = (adjMatrix[0][i] != 0 ? 0 : -1);
+  }
 
-    int numU = 1;//进入U的顶点数
-    
-    while(numU < numVer){
-        int minDist = -1;//初始化最小距离
-        int minInd = -1;//V-U里面最小边对应的顶点
+  int numU = 1;//进入U的顶点数
+  
+  while(numU < numVer){
+      int minDist = -1;//初始化最小距离
+      int minInd = -1;//V-U里面最小边对应的顶点
 
-        for(int i=1;i<numVer;i++){
+      for(int i=1;i<numVer;i++){
 
-            if(isInU[i]) continue;//不看在U里面的点
-            if(dist[i]==-1) continue;//没有边就过
-
-
-            if(minDist==-1 || dist[i] < minDist){
-                minDist = dist[i];
-                minInd = i;
-            }
-        }
+          if(isInU[i]) continue;//不看在U里面的点
+          if(dist[i]==-1) continue;//没有边就过
 
 
-        isInU[minInd] = true;//V-U的最小边顶点入U
-        numU++;
-        amg->addEdge(verList.getEleAtPos(minInd), verList.getEleAtPos(from[minInd]), minDist);
-        //amg->printGraph();
+          if(minDist==-1 || dist[i] < minDist){
+              minDist = dist[i];
+              minInd = i;
+          }
+      }
 
 
-        //更新
-        for(int i=1;i<numVer;i++){
-            if(isInU[i]) continue;
-            if(adjMatrix[minInd][i]==0) continue;//没有边就过
+      isInU[minInd] = true;//V-U的最小边顶点入U
+      numU++;
+      amg->addEdge(verList.getEleAtPos(minInd), verList.getEleAtPos(from[minInd]), minDist);
+      //amg->printGraph();
 
-            
-            if(dist[i]==-1 || adjMatrix[minInd][i] <dist[i]){
-                dist[i] = adjMatrix[minInd][i];
-                from[i] = minInd;
-            }
-        }
-    }
-    return amg;
+
+      //更新
+      for(int i=1;i<numVer;i++){
+          if(isInU[i]) continue;
+          if(adjMatrix[minInd][i]==0) continue;//没有边就过
+
+          
+          if(dist[i]==-1 || adjMatrix[minInd][i] <dist[i]){
+              dist[i] = adjMatrix[minInd][i];
+              from[i] = minInd;
+          }
+      }
+  }
+  return amg;
 }
 
 ```
@@ -113,13 +113,23 @@ AMGraph<T>* PrimMST(){
 
 ### 时间复杂度O(n*n)
 
+
 ## kruskal算法
 
-### 思路
+### 思路: 不断填入边，看连通分量
+
+- 设T为最小生成树
 - 初始化就让U=V，让最小生成树T的边集先为空（一开始T的连通分量就有n个，即n个独立的顶点）
-- 在E中寻找最短边(u,v)，如果(u,v)位于T两个不同的连通分量，则将这条边加入T的边集，并把两个连通分量合并为一个连通分量。重复操作，直到T只剩下一个连通分量
+- 在E中寻找**最短边**(u,v)，**如果(u,v)位于T两个不同的连通分量，则将这条边加入T的边集**，并把**两个连通分量合并为一个连通分量**。重复操作，直到T**只剩下一个连通分量**
+
+### eg
+
+<img width="515" height="250" alt="屏幕截图 2026-11-20 180207" src="https://github.com/user-attachments/assets/122a40dd-6e73-455d-afc7-1eaf4cf81471" />
+
+- 合并B,E→并C,D→并A,F→并{A,F},{C,D}→并{A,F,C,D},{B,E}
 
 ### 代码实现
+
 - 存储边：使用三元数组
 - 合并连通分量：使用一个parent数组，记录哪些顶点属于同一个连通分量
   - 初始化各个顶点parent[i]=-1
