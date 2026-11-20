@@ -20,15 +20,97 @@
 ### 代码实现
 - 存储：邻接矩阵
   
-- **得到最短边**：设置数组shortEdge[n]表示候选最短边集，元素包含adjvex和lowcast
-  - shortEdge[i]表示U里的vi点连到V-U的点权值最小的边。
-  - shortEdge[i].lowcost=w 代表i连到V-U最小边的权值
-  - shortEdge[i].adjvex=k 代表另一个顶点是vk
-  
-- vk进入U后
-  - shortEdge[j].lowcost=min{shortEdge[j].lowcost,cost(vj,vk)}
-  - shortEdge[j].lowcost相应更新
-     
+- 1、建立三个数组
+  - bool isInU[numVer]:顶点是否已经进入U
+  - int dist[numVer]：从U接到V-U的最小边的权值
+  - int from[numVer]：最小权值边在U里的端点
+ 
+- 2、初始化
+  - 一开始只在U放入第0个顶点
+  - i从0到numVer：isInU[i]=false
+  - dist[i]初始化为0到第i个顶点的边权值，如果没有边就为-1
+  - 如果0到i有边：from[i]=0，没有边：from[i]=-1
+
+- 3、不断加入U
+  - 循环的结束条件：U里的顶点=numVer
+  - 初始化最小距离minDist=-1,最小距离对应的在V-U的顶点minInd=-1
+  - 1、找最小边和对应顶点，用minInd表示
+  - 2、将minInd加入U，对应边也加入
+  - 3、更新
+    - dist[i]=第二步加入的minInd到i的边权值
+    - from[i]=minInd
+    - 若没有仍然填-1
+
+
+``` cpp
+
+AMGraph<T>* PrimMST(){
+
+    // 默认连通无向图
+    T* arr = new T[numVer];
+    for(int i=0;i<numVer;i++){
+        arr[i] = verList.getEleAtPos(i);
+    }
+    AMGraph<T>* amg = new AMGraph<T>(arr,numVer,false);
+
+    bool isInU[numVer];//顶点是否已经进入U
+    int dist[numVer];//从U接到V-U的最小权值边
+    int from[numVer]; //最小权值边在U里的端点
+
+    //初始化
+    for(int i=1;i<numVer;i++){
+        isInU[i] = false;//所有顶点都没加入U
+
+        //一开始只把第0个顶点放入，所以距离初始化成别的顶点和0的距离，没有就是-1
+        dist[i] = (adjMatrix[0][i] !=0 ? adjMatrix[0][i] : -1);
+
+        
+        from[i] = (adjMatrix[0][i] != 0 ? 0 : -1);
+    }
+
+    int numU = 1;//进入U的顶点数
+    
+    while(numU < numVer){
+        int minDist = -1;//初始化最小距离
+        int minInd = -1;//V-U里面最小边对应的顶点
+
+        for(int i=1;i<numVer;i++){
+
+            if(isInU[i]) continue;//不看在U里面的点
+            if(dist[i]==-1) continue;//没有边就过
+
+
+            if(minDist==-1 || dist[i] < minDist){
+                minDist = dist[i];
+                minInd = i;
+            }
+        }
+
+
+        isInU[minInd] = true;//V-U的最小边顶点入U
+        numU++;
+        amg->addEdge(verList.getEleAtPos(minInd), verList.getEleAtPos(from[minInd]), minDist);
+        //amg->printGraph();
+
+
+        //更新
+        for(int i=1;i<numVer;i++){
+            if(isInU[i]) continue;
+            if(adjMatrix[minInd][i]==0) continue;//没有边就过
+
+            
+            if(dist[i]==-1 || adjMatrix[minInd][i] <dist[i]){
+                dist[i] = adjMatrix[minInd][i];
+                from[i] = minInd;
+            }
+        }
+    }
+    return amg;
+}
+
+```
+
+
 ### 时间复杂度O(n*n)
 
 ## kruskal算法
