@@ -233,3 +233,19 @@ AMGraph<T>* PrimMST(){
 
 - <img width="505" height="247" alt="屏幕截图 2026-11-24 171137" src="https://github.com/user-attachments/assets/d135e7e9-d626-4949-8d59-7c8bcf57bf04" />
 
+- 每条线可以同时开工，要求每个活动vi都要经过，所以最小的工期反而是最长的路径
+  - 如下面的最短工期就是10
+  - <img width="218" height="117" alt="屏幕截图 2026-11-24 172800" src="https://github.com/user-attachments/assets/745f8f25-018a-4911-bfb8-5b441eaa02c0" />
+
+
+### 关键路径
+- <img width="496" height="209" alt="屏幕截图 2026-11-24 173500" src="https://github.com/user-attachments/assets/1154bc6a-6764-451e-9c0e-d982aa62e966" />
+
+- 找关键活动
+  - 事件的最早，最迟发生时间ve[k]，vl[k]
+  - 活动的最早，最晚开始时间e[i],l[i]
+  - eg，对于下面的例子，已知工程最快10天完工。如果恰在10天结束，则四个值为以下：
+    - <img width="218" height="117" alt="屏幕截图 2026-11-24 172800" src="https://github.com/user-attachments/assets/ecc4db8a-c8cd-4e72-8a67-f83c9b1ce0d8" />
+
+    - <img width="1424" height="1050" alt="00931745d13e892cabcd0fa43c34d249" src="https://github.com/user-attachments/assets/c0b5efdb-dd34-404d-8abc-62036267b240" />
+
