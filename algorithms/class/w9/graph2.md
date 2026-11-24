@@ -208,6 +208,8 @@ AMGraph<T>* PrimMST(){
 
 # 有向无环图及其应用
 
+* 任一个有向图，把一个强连通分量看为一个点，则新的图为无环图
+
 ## AOV网和拓扑排序
 - <img width="489" height="228" alt="屏幕截图 2026-11-24 165349" src="https://github.com/user-attachments/assets/31cb6b6f-efc8-4872-9b64-91dc1d10867e" />
 
