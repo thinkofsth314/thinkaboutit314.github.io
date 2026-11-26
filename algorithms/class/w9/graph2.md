@@ -297,8 +297,66 @@ void printFloyd(int v1,int v2){
 
 #### 代码实现
 - 存储结构：邻接表。存储顶点，顶点入度，链表储存顶点的所有后继
-- 可以找到一个入度为0的顶点就直接输出，然后删去它连的边（它后继的入度都-1）
-- 也可以通过栈存储（不过没什么必要。。）
+  - 也可以邻接矩阵。另外开一个数组存储每个顶点的入度
+- 开一个队列存储已经排序的顶点，每次找到一个顶点就入队，对应连出去的顶点入度-1
+
+``` cpp
+void printToPo(){
+  if(!directed){
+      cout<<"Directed graphs only"<<endl;
+      return;
+  }
+
+  int inDeg[numVer];//每个顶点的入度，不断删除边就是减小入度
+  //初始化
+  for(int i=0;i<numVer;j++){
+      inDeg[i]=0;
+      for(int i=0;j<numVer;j++){
+          if(adjMatrix[j][i]!=0)inDeg[i]++;
+      }
+  }
+
+  LinkQueue<int> q;//排序的队列
+  int numQ=0;//队列里的顶点数
+
+  bool changed=true;//用change而不是<numVer是因为有可能有回路，有回路就不会让所有顶点入队
+  bool* isInQ=new bool[numVer]();
+
+  while(changed){
+      changed=false;
+      //选取入度为0的点，入队然后删除它连的边
+      for(int i=0;i<numVer;i++){
+          if(isInQ[i])continue;
+          if(inDeg[i]!=0)continue;
+
+          q.enQueue(i);
+          numQ++;
+          changed=true;
+          isInQ[i]=true;
+
+          for(int j=0;j<numVer;j++){
+              if(isInQ[j])continue;
+              if(adjMatrix[i][j]!=0)inDeg[j]--;
+          }
+      }
+  }
+
+  if(numVer!=numQ){
+      cout<<"loop"<<endl;
+      return;
+  }
+
+  cout<<"ToPo order:";
+  while(!q.isEmpty()){
+      int imp=q.deQueue;
+      cout<<verList.getEleAtPos(tmp)<<" ";
+  }
+  cout<<endl;
+
+  delete[] isInQ;
+
+}
+```
   
 ## AOE网和关键路径（有权值）
 - <img width="500" height="275" alt="屏幕截图 2026-11-24 170951" src="https://github.com/user-attachments/assets/28e7ae6a-ce30-4481-a1cd-57b356a8f6ae" />
