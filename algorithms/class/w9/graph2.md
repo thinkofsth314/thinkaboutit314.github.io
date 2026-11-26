@@ -197,7 +197,7 @@ AMGraph<T>* PrimMST(){
 ### 思路：不断加入中继点
 - dist矩阵，记录最短路径。初始化成每两个顶点的距离。每次加入中继点的时候更新一次
 - path矩阵，记录dist矩阵对应位置的路径
-- 对于vi~vj的路径，一开始初始化U为{vi,vj}，加入一个中继点v，然后更新一次dist（**允许走v之后每两个顶点的最小距离**）
+- 对于vi~vj的路径，一开始初始化U为空，加入一个中继点v，然后更新一次dist（**允许走v之后每两个顶点的最小距离**）
 - 结束：把所有的顶点都加入U
 - <img width="496" height="305" alt="屏幕截图 2026-11-24 165011" src="https://github.com/user-attachments/assets/3e32b1c7-ff8e-4fca-b0a8-fbda53326ea5" />
 
@@ -205,6 +205,76 @@ AMGraph<T>* PrimMST(){
 - 存储结构：邻接矩阵（直接就可以初始化，但是无边的改成-1，自己到自己的边记为0）
 - 数组dist[n][n]存放每两个顶点的最短路径。每次加入中继点的时候更新一次
 - 数组path[n][n]存放最短路径。有边的初始化为"vivj",无边的为空""。也是加入一次中继点就迭代一次
+
+``` cpp
+void printFloyd(int v1,int v2){
+  int** dist=new int*[numVer]();
+  string* path=new string*[numVer]();
+  bool* isInU=new bool[numVer]();
+  
+  for(int i=0;i<numVer;i++){
+      dist[i]=new int[numVer];
+      path[i]=new string[numVer];
+  }
+  
+  //初始化
+  for(int i=0;i<numVer;i++){
+      for(int j=0;j<numVer;j++){
+          dist[i][j]=-1;
+          path[i][j]="";
+          if(adjMatrix[i][j]!=0){
+              dist[i][j]=adjMatrix[i][j];
+              path[i][j]=to_string(verList.getEleAtPos(i))+" -> "+to_string(verList.getEleAtPos(j));
+          }
+          if(i==j)dis[i][j]=0;
+      }
+   }
+  
+   int numU=0;
+  //迭代
+  while(numU<numVer){
+      for(int i=0;i<numVer;i++){
+          if(isInU[i])continue;
+  
+          isInU[i]=true;
+          numU++;
+  
+          //迭代(i是中继点，j和k是要连的两个点)j->i->k
+          for(int j=0;j<numVer;j++){
+              if(dist[j][i]==-1)continue;
+  
+              for(int k=0;k<numVer;k++){
+                  //如果连不通就不用迭代
+                  if(dist[i][k]==-1)continue;
+                  if(j==k)continue;
+  
+                  int newDist=dist[j][i]+dist[i][k];
+                  if(dist[j][k]==-1||newDist<dist[j][k]){
+                      dist[j][k]=newDist;
+  
+                      string mid=to_string(verList.getEleAtPos(i));
+                      path[j][k]=path[j][i]+path[i][k].substr(mid.size());
+                  }
+              }
+          }
+      }
+          
+  }
+  
+  //打印
+  if(dist[v1][v2]==-1)cout<<"Unreachable"<<endl;
+  else cout<<path[v1][v2]<<" , cost = "<<dist[v1][v2]<<endl;
+  
+  for(int i=0;i<numVer;i++){
+      delete[] dist[i];
+      delete[] path[i];
+  }
+  delete[] isInU;
+  
+  
+}
+```
+
 
 # 有向无环图及其应用
 
